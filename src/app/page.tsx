@@ -66,7 +66,8 @@ export default function Home() {
       setStep('report');
     } catch (err: any) {
       console.error(err);
-      setError(userData.language === 'en' ? 'The stars are clouded. Please try again.' : '星象模糊，请重试。');
+      const fallbackError = userData.language === 'en' ? 'The stars are clouded. Please try again.' : '星象模糊，请重试。';
+      setError(err.message || fallbackError);
       setStep('details');
     }
   };

@@ -23,8 +23,56 @@ function logUserToCSV(name: string, gender: string, dob: string, birthTime: stri
   }
 }
 
+const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
+const MAX_REQUESTS_PER_WINDOW = 3; // 1 request per day for local testing
+
+// Simple in-memory rate limiter (Warning: Resets on server restart/redeploy)
+const rateLimitMap = new Map<string, number[]>();
+
+function getClientIp(req: NextRequest): string {
+  // Check headers for proxy IP
+  const forwardedFor = req.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
+  // Check specific headers for Vercel/Cloudflare
+  const realIp = req.headers.get('x-real-ip') || req.headers.get('cf-connecting-ip');
+  if (realIp) {
+    return realIp;
+  }
+  // Fallback (might be empty in dev)
+  return '127.0.0.1';
+}
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const requestTimestamps = rateLimitMap.get(ip) || [];
+
+  // Filter out timestamps older than the window
+  const recentRequests = requestTimestamps.filter(timestamp => now - timestamp < RATE_LIMIT_WINDOW);
+
+  if (recentRequests.length >= MAX_REQUESTS_PER_WINDOW) {
+    return false; // Limit exceeded
+  }
+
+  // Update the map
+  recentRequests.push(now);
+  rateLimitMap.set(ip, recentRequests);
+  return true; // request allowed
+}
+
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+
+    // Check rate limit
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Daily limit reached. Your IP can only generate three fortune per day.' },
+        { status: 429 }
+      );
+    }
+
     const { name, dob, birthTime, gender, language } = await req.json();
 
     // Log user details to CSV
