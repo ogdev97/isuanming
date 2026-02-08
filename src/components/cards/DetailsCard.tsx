@@ -6,19 +6,20 @@ import Button from '@/components/ui/Button';
 import { motion } from 'framer-motion';
 
 interface DetailsCardProps {
-    onSubmit: (name: string, dob: string) => void;
+    onSubmit: (name: string, dob: string, birthTime: string) => void;
     language: 'en' | 'zh';
 }
 
 export default function DetailsCard({ onSubmit, language }: DetailsCardProps) {
     const [name, setName] = useState('');
     const [dob, setDob] = useState('');
+    const [birthTime, setBirthTime] = useState('');
     const isEn = language === 'en';
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (name && dob) {
-            onSubmit(name, dob);
+            onSubmit(name, dob, birthTime);
         }
     };
 
@@ -52,17 +53,30 @@ export default function DetailsCard({ onSubmit, language }: DetailsCardProps) {
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-stone-700 ml-1">
-                        {isEn ? 'Date of Birth' : '出生日期'}
-                    </label>
-                    <input
-                        type="date"
-                        value={dob}
-                        onChange={(e) => setDob(e.target.value)}
-                        required
-                        className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-auspicious-red focus:ring-2 focus:ring-auspicious-red/20 outline-none transition-all bg-white/50 backdrop-blur-sm"
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-stone-700 ml-1">
+                            {isEn ? 'Date of Birth' : '出生日期'}
+                        </label>
+                        <input
+                            type="date"
+                            value={dob}
+                            onChange={(e) => setDob(e.target.value)}
+                            required
+                            className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-auspicious-red focus:ring-2 focus:ring-auspicious-red/20 outline-none transition-all bg-white/50 backdrop-blur-sm"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-stone-700 ml-1">
+                            {isEn ? 'Time (Optional)' : '时辰 (选填)'}
+                        </label>
+                        <input
+                            type="time"
+                            value={birthTime}
+                            onChange={(e) => setBirthTime(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border border-stone-300 focus:border-auspicious-red focus:ring-2 focus:ring-auspicious-red/20 outline-none transition-all bg-white/50 backdrop-blur-sm"
+                        />
+                    </div>
                 </div>
 
                 <Button

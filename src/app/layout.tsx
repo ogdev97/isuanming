@@ -15,9 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "iSuanming",
   description: "Discover your destiny in the Year of the Fire Horse (Bing Wu). Personalized Fengshui reports powered by AI.",
-  icons: {
-    icon: "/horse-fire.png",
-  },
+
 };
 
 export default function RootLayout({

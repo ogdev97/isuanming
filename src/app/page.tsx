@@ -22,6 +22,7 @@ export default function Home() {
     gender: '' as 'male' | 'female',
     name: '',
     dob: '',
+    birthTime: '',
   });
   const [report, setReport] = useState<FortuneReport | null>(null);
   const [error, setError] = useState('');
@@ -36,8 +37,8 @@ export default function Home() {
     setStep('details');
   };
 
-  const handleDetailsSubmit = async (name: string, dob: string) => {
-    setUserData(prev => ({ ...prev, name, dob }));
+  const handleDetailsSubmit = async (name: string, dob: string, birthTime: string) => {
+    setUserData(prev => ({ ...prev, name, dob, birthTime }));
     setStep('loading');
     setError('');
     setReport(null);
@@ -49,10 +50,8 @@ export default function Home() {
         body: JSON.stringify({
           name,
           dob,
+          birthTime,
           gender: userData.gender,
-          // language not needed in body for prompt anymore if prompt is updated to always return bilingual, 
-          // but harmless to keep or remove. The new prompt removed language input though.
-          // I'll keep passing it just in case I revert or need it later, but new API ignores it.
           language: userData.language
         }),
       });
@@ -74,7 +73,7 @@ export default function Home() {
 
   const handleReset = () => {
     setStep('language');
-    setUserData({ language: 'en', gender: 'male', name: '', dob: '' });
+    setUserData({ language: 'en', gender: 'male', name: '', dob: '', birthTime: '' });
     setReport(null);
   };
 
